@@ -53,5 +53,15 @@ public class UserController {
 	public String deleteUser(@PathVariable int user_id){
 		return userv.deleteUser(user_id);
 	}
+	
+    @PostMapping("/login")
+    public String login(@RequestBody UserEntity user) {
+        UserEntity authenticatedUser = userv.authenticateUser(user.getUsername(), user.getPassword());
 
+        if (authenticatedUser != null) {
+            return "Login successful"; // You may return a token or other information here
+        } else {
+            return "Login failed";
+        }
+    }
 }

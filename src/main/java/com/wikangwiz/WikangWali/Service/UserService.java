@@ -62,4 +62,15 @@ public class UserService {
 		return msg;
 	}
 	
+	public UserEntity authenticateUser(String username, String password) {
+        // Find user by username from the database
+        UserEntity user = urepo.findByUsername(username);
+
+        // Check if the user exists and the password matches
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+
+        return null; // Authentication failed
+    }
 }
