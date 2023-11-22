@@ -15,6 +15,10 @@ public class UserEntity {
 	private int user_id;
 	
 	private String username;
+
+	private String fname;
+
+	private String lname;
 	
 	private String password;
 	
@@ -24,12 +28,15 @@ public class UserEntity {
 		super();
 	}
 
-	public UserEntity(int user_id, String username, String password, String email) {
+	public UserEntity(int user_id, String username, String fname, String lname, String password, String email) {
 		super();
 		this.user_id = user_id;
 		this.username = username;
+		this.fname = fname;
+		this.lname = lname;
 		this.password = password;
 		this.email = email;
+
 	}
 
 	public int getUser_id() {
@@ -46,6 +53,22 @@ public class UserEntity {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+		public String getFname() {
+		return fname;
+	}
+
+	public void setFname(String fname) {
+		this.fname = fname;
+	}
+
+	public String getLname() {
+		return lname;
+	}
+
+	public void setLname(String lname) {
+		this.lname = lname;
 	}
 
 	public String getPassword() {
