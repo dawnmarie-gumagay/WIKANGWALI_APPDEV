@@ -62,6 +62,7 @@ public class UserService {
 		return msg;
 	}
 	
+	//FOR LOGGING IN
 	public UserEntity authenticateUser(String username, String password) {
         // Find user by username from the database
         UserEntity user = urepo.findByUsername(username);

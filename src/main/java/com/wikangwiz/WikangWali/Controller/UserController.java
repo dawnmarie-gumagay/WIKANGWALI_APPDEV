@@ -3,6 +3,8 @@ package com.wikangwiz.WikangWali.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wikangwiz.WikangWali.Entity.UserEntity;
 import com.wikangwiz.WikangWali.Service.UserService;
+
+//import io.jsonwebtoken.Jwts;
+//import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
 @RequestMapping("/user")
@@ -54,14 +59,35 @@ public class UserController {
 		return userv.deleteUser(user_id);
 	}
 	
-    @PostMapping("/login")
-    public String login(@RequestBody UserEntity user) {
+  /*@PostMapping("/login")
+  public String login(@RequestBody UserEntity user) {
+    UserEntity authenticatedUser = userv.authenticateUser(user.getUsername(), user.getPassword());
+
+      if (authenticatedUser != null) {
+        return "Login successful"; // You may return a token or other information here
+	    } else {
+        return "Login failed";
+      }
+    }*/
+	  
+		/*@PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody UserEntity user) {
         UserEntity authenticatedUser = userv.authenticateUser(user.getUsername(), user.getPassword());
 
         if (authenticatedUser != null) {
-            return "Login successful"; // You may return a token or other information here
+            String token = generateToken(authenticatedUser.getUsername());
+            return ResponseEntity.ok(token);
         } else {
-            return "Login failed";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
         }
     }
+
+    private String generateToken(String username) {
+        // Add any additional information you want to include in the token
+        // For simplicity, we're only including the username here
+        return Jwts.builder()
+                .setSubject(username)
+                .signWith(SignatureAlgorithm.HS512, "yourSecretKey")
+                .compact();
+    }*/
 }
