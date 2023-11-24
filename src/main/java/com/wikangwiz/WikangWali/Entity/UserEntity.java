@@ -1,26 +1,14 @@
 package com.wikangwiz.WikangWali.Entity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 @Entity
 @Table(name="tbluser")
-public class UserEntity implements UserDetails{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8101373468985037860L;
+public class UserEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,13 +23,6 @@ public class UserEntity implements UserDetails{
 	private String password;
 	
 	private String email;
-	
-	//private List<Authority> authorities = new ArrayList<>();
-	
-	
-	//private List<CourseEntity> courses = new ArrayList<>();
-	//private List<ProgressTrackerEntity> pt = new ArrayList<>();
-	//private int parent_id();
 
 	public UserEntity() {
 		super();
@@ -65,7 +46,6 @@ public class UserEntity implements UserDetails{
 		this.user_id = user_id;
 	}
 	
-	@Override
 	public String getUsername() {
 		return username;
 	}
@@ -87,7 +67,6 @@ public class UserEntity implements UserDetails{
 		this.lname = lname;
 	}
 	
-	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -102,28 +81,5 @@ public class UserEntity implements UserDetails{
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> roles = new ArrayList<>();
-		roles.add(new Authority("ROLE_STUDENT"));
-		return roles;
-	}
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-	@Override
-	public boolean isEnabled() {
-		return true;
 	}
 }
