@@ -1,8 +1,10 @@
 package com.wikangwiz.WikangWali.Controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -86,7 +88,7 @@ public class StudentController {
 	 }
 	 
 	//U - Update a Student NAME
-	@PutMapping("/updateStudentName")
+	@PutMapping("/updateStudentProfile")
 	public StudentEntity updateStudentName(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
 		return sserv.updateStudentName(username, newStudentDetails);
 	}

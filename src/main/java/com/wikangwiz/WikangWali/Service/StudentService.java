@@ -83,7 +83,7 @@ public class StudentService {
 	    return msg;
 	}
 	
-	//D - delete a Student
+	//D - delete a Student by IsDeleted
 	@SuppressWarnings("finally")
 	public StudentEntity deleteStudent(String username, StudentEntity newStudentDetails) {
 		StudentEntity student = new StudentEntity();
@@ -133,7 +133,7 @@ public class StudentService {
 	        }
 	 }
 	 
-	 //U - Update a STUDENT NAME
+	 //U - Update a STUDENT NAME & EMAIL
 	 @SuppressWarnings("finally")
 	 public StudentEntity updateStudentName(String username, StudentEntity newStudentDetails) {
 		 StudentEntity student = new StudentEntity();
@@ -144,6 +144,7 @@ public class StudentService {
 			 //2.) update the record
 			 student.setFname(newStudentDetails.getFname());
 			 student.setLname(newStudentDetails.getLname());
+			 student.setEmail(newStudentDetails.getEmail());
 
 		 }catch(NoSuchElementException ex) {
 			 throw new NoSuchElementException("Student "+ username + " does not exist!");
