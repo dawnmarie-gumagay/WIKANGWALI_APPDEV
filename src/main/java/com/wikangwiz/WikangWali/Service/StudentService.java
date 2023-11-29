@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Entity.UserEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
+import com.wikangwiz.WikangWali.Methods.LoginResponse;
 import com.wikangwiz.WikangWali.Repository.StudentRepository;
 import com.wikangwiz.WikangWali.Repository.UserRepository;
 
@@ -101,21 +102,30 @@ public class StudentService {
 	}
 
 	///////////
-	 public String login(AuthRequest authRequest) {
-		 String username = authRequest.getUsername();
-	        String password = authRequest.getPassword();
+	public LoginResponse login(AuthRequest authRequest) {
+	    String username = authRequest.getUsername();
+	    String password = authRequest.getPassword();
 
-	        StudentEntity user = srepo.findByUsername(username);
+	    StudentEntity user = srepo.findByUsername(username);
 
-	        if (user != null && user.getPassword().equals(password)) {
-	            return "Login Successful";
-	        } else {
-	            return "Login Failed";
-	        }
-	 }
+	    if (user != null && user.getPassword().equals(password)) {
+	        return new LoginResponse(true, "Login Successful");
+	    } else {
+	        return new LoginResponse(false, "Login Failed");
+	    }
+	}
 	 
 	 public ResponseEntity<StudentEntity> getStudentById(int student_id) {
 		 StudentEntity student = srepo.findById(student_id).orElse(null);
+	        if (student != null) {
+	            return ResponseEntity.ok(student);
+	        } else {
+	            return ResponseEntity.notFound().build();
+	        }
+	 }
+	 
+	 public ResponseEntity<StudentEntity> getStudentByUsername(String username) {
+		 StudentEntity student = srepo.findByUsername(username);
 	        if (student != null) {
 	            return ResponseEntity.ok(student);
 	        } else {

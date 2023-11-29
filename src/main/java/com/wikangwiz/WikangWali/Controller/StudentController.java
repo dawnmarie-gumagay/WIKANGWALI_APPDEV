@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
+import com.wikangwiz.WikangWali.Methods.LoginResponse;
 import com.wikangwiz.WikangWali.Service.AchievementService;
 import com.wikangwiz.WikangWali.Service.StudentService;
 
 @RestController
 @RequestMapping("/student")
+@CrossOrigin(origins = "http://localhost:3000")
 public class StudentController {
 	
 	@Autowired
@@ -67,13 +70,19 @@ public class StudentController {
 	
 	/////////////
 	@PostMapping("/login")
-	 public String login(@RequestBody AuthRequest authRequest) {
-		return sserv.login(authRequest);
+    public ResponseEntity<LoginResponse> login(@RequestBody AuthRequest authRequest) {
+        LoginResponse response = sserv.login(authRequest);
+        return ResponseEntity.ok(response);
     }
 	
 	 @GetMapping("/getStudentById/{student_id}")
 	 public ResponseEntity<StudentEntity> getStudentById(@PathVariable int student_id){
 		 return sserv.getStudentById(student_id);
+	 }
+	 
+	 @GetMapping("/getStudentByUsername/{username}")
+	 public ResponseEntity<StudentEntity> getStudentByUsername(@PathVariable String username){
+		 return sserv.getStudentByUsername(username);
 	 }
 	 
 	//U - Update a Student NAME
