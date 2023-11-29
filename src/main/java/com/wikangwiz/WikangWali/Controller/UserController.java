@@ -2,6 +2,8 @@ package com.wikangwiz.WikangWali.Controller;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wikangwiz.WikangWali.Entity.UserEntity;
+import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Service.UserService;
 
 @RestController
@@ -27,7 +30,7 @@ public class UserController {
 	
 	@GetMapping("/print")
 	public String printHello(){
-		return "Welcome to Wikang Wali!";
+		return "WikangWali - User";
 	}
 	
 	//C - Create new record for tblUser
@@ -44,24 +47,21 @@ public class UserController {
 	
 	//U - Update a User record.
 	@PutMapping("/updateUser")
-	public UserEntity updateUser(@RequestParam int user_id, @RequestBody UserEntity newUserDetails) {
-		return userv.updateUser(user_id, newUserDetails);
+	public UserEntity updateUser(@RequestParam String username, @RequestBody UserEntity newUserDetails) {
+		return userv.updateUser(username, newUserDetails);
 	}
 	
 	//D - Delete a User record.
-	@DeleteMapping("/deleteUser/{user_id}")
-	public String deleteUser(@PathVariable int user_id){
-		return userv.deleteUser(user_id);
+	@Transactional
+	@DeleteMapping("/deleteUser/{username}")
+	public String deleteUser(@PathVariable String username){
+		return userv.deleteUser(username);
 	}
 	
-    @PostMapping("/login")
-    public String login(@RequestBody UserEntity user) {
-        UserEntity authenticatedUser = userv.authenticateUser(user.getUsername(), user.getPassword());
-
-        if (authenticatedUser != null) {
-            return "Login successful"; // You may return a token or other information here
-        } else {
-            return "Login failed";
-        }
-    }
+	////////////////
+	@PostMapping("/login")
+	 public int login(@RequestBody AuthRequest authRequest) {
+		return userv.login(authRequest);
+  }
+    
 }
