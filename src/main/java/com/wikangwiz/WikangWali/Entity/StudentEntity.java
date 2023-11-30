@@ -37,6 +37,8 @@ public class StudentEntity{
 	
 	private int isDeleted;
 	
+	private boolean isAdmin;
+	
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<AchievementEntity> achievements;
     
@@ -45,9 +47,8 @@ public class StudentEntity{
         this.achievements = new ArrayList<>(); // Initialize the achievements list
     }
 
-
 	public StudentEntity(int student_id, String username, String fname, String lname, String password, String email,
-			int isDeleted, List<AchievementEntity> achievements) {
+			int isDeleted, boolean isAdmin, List<AchievementEntity> achievements) {
 		super();
 		this.student_id = student_id;
 		this.username = username;
@@ -56,9 +57,9 @@ public class StudentEntity{
 		this.password = password;
 		this.email = email;
 		this.isDeleted = isDeleted;
+		this.isAdmin = false;
 		this.achievements = achievements != null ? achievements : new ArrayList<>(); // Initialize the achievements list
 	}
-
 
 	public int getStudent_id() {
 		return student_id;
@@ -138,5 +139,17 @@ public class StudentEntity{
 	public void setAchievements(List<AchievementEntity> achievements) {
 		this.achievements = achievements;
 	}
+
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	
+	
 	
 }

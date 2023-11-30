@@ -21,6 +21,7 @@ import com.wikangwiz.WikangWali.Entity.AchievementEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Methods.LoginResponse;
+import com.wikangwiz.WikangWali.Methods.UpdatePasswordRequest;
 import com.wikangwiz.WikangWali.Service.AchievementService;
 import com.wikangwiz.WikangWali.Service.StudentService;
 
@@ -93,11 +94,24 @@ public class StudentController {
 		return sserv.updateStudentName(username, newStudentDetails);
 	}
 	
-	//U - Update a Student PASSWORD
+	//U - Update a Student NAME
 	@PutMapping("/updateStudentPassword")
-	public StudentEntity updateStudentPassword(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
-		return sserv.updateStudentPassword(username, newStudentDetails);
+	public ResponseEntity<Object> updateStudentPassword(
+	    @RequestParam String username,
+	    @RequestBody UpdatePasswordRequest request
+	) {
+	    try {
+	        StudentEntity updatedStudent = sserv.updateStudentPassword(username, request);
+	        return ResponseEntity.ok(updatedStudent);
+	    } catch (NoSuchElementException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	    }
 	}
+
 	
 	////////////ACHIEVEMENTS
 	//ADD ACHIVEMENTS

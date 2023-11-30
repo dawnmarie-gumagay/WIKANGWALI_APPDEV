@@ -11,6 +11,7 @@ import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Entity.UserEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Methods.LoginResponse;
+import com.wikangwiz.WikangWali.Methods.UpdatePasswordRequest;
 import com.wikangwiz.WikangWali.Repository.StudentRepository;
 import com.wikangwiz.WikangWali.Repository.UserRepository;
 
@@ -154,24 +155,30 @@ public class StudentService {
 	}
 	
 	//
-	//U - Update a STUDENT PASSWORD
-	@SuppressWarnings("finally")
-	public StudentEntity updateStudentPassword(String username, StudentEntity newStudentDetails) {
-		StudentEntity student = new StudentEntity();
+	// U - Update a STUDENT PASSWORD
+	 @SuppressWarnings("finally")
+	 public StudentEntity updateStudentPassword(String username, UpdatePasswordRequest request) {
+	     StudentEntity student = srepo.findByUsername(username);
 
-		try {
-			//1.)search the id number of Student that will be updated
-			student = srepo.findByUsername(username);
-			
-		    //2.) update the record
-			student.setPassword(newStudentDetails.getPassword());
+	     try {
+	         if (!student.getPassword().equals(request.getOldPassword())) {
+	             throw new RuntimeException("Old password does not match.");
+	         }
 
-		}catch(NoSuchElementException ex) {
-			throw new NoSuchElementException("Student "+ username + " does not exist!");
-		}finally {
-			return srepo.save(student);
-		}
+	         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+	             throw new RuntimeException("New password and confirm password do not match.");
+	         }
+
+	         student.setPassword(request.getNewPassword());
+
+	     } catch(NoSuchElementException ex) {
+			 throw new NoSuchElementException("Student "+ username + " does not exist!");
+		 }finally {
+			 return srepo.save(student);
+		 }
 	}
+
+
 	
 	 public StudentEntity findStudentByUsername(String username) {
 	        return srepo.findByUsername(username);
