@@ -35,13 +35,15 @@ public class StudentController {
 	
 	@Autowired
 	AchievementService achieveServ;
-
+	
+	//////FOR CHECKING//////
 	@GetMapping("/print")
 	public String printHello(){
 		return "WikangWali - Student";
 	}
 	
-	//C - Create a Student record
+	//////CRUD//////
+	//C - Create a Student record 
 	@PostMapping("/insertStudent")
 	public StudentEntity insertStudent(@RequestBody StudentEntity student) {
 		return sserv.insertStudent(student);
@@ -53,10 +55,22 @@ public class StudentController {
 		return sserv.getAllStudents();
 	}
 	
+	//R - READ all non-deleted students
+	@GetMapping("/getAllNonDeletedStudents")
+	public List<StudentEntity>getAllNonDeletedStudents(){
+		return sserv.getAllNonDeletedStudents();
+	}
+	
+	// R - READ all deleted students
+	@GetMapping("/getAllDeletedStudents")
+	public List<StudentEntity>getAllDeletedStudents(){
+		return sserv.getAllDeletedStudents();
+	}
+	
 	//U - Update a Student record
 	@PutMapping("/updateStudent")
-	public StudentEntity updateStudent(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
-		return sserv.updateStudent(username, newStudentDetails);
+	public StudentEntity updateStudent(@RequestParam int student_id,@RequestBody StudentEntity newStudentDetails){
+		return sserv.updateStudent(student_id, newStudentDetails);
 	}
 	
 	//D - Delete a Student record
@@ -65,11 +79,19 @@ public class StudentController {
 		return sserv.deletePStudent(student_id);
 	}
 	
-	//D - Delete a Student record
-	@PutMapping("/deleteStudent")
-	public StudentEntity deleteStudent(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
-		return sserv.deleteStudent(username, newStudentDetails);
-	}
+	// Endpoint to set isDeleted to true for a student by student_id
+    @PostMapping("/delete/{student_id}")
+    public ResponseEntity<StudentEntity> deleteStudent(@PathVariable int student_id) {
+        try {
+            StudentEntity deletedStudent = sserv.deleteStudent(student_id);
+            return ResponseEntity.ok(deletedStudent);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception ex) {
+            // Handle other exceptions if needed
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 	
 	/////////////
 	@PostMapping("/login")
@@ -78,9 +100,9 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
 	
-	 @GetMapping("/getStudentById/{student_id}")
-	 public ResponseEntity<StudentEntity> getStudentById(@PathVariable int student_id){
-		 return sserv.getStudentById(student_id);
+	 @GetMapping("/getStudentResponseById/{student_id}")
+	 public ResponseEntity<StudentEntity> getStudentResponseById(@PathVariable int student_id){
+		 return sserv.getStudentResponseById(student_id);
 	 }
 	 
 	 @GetMapping("/getStudentByUsername/{username}")
@@ -90,18 +112,18 @@ public class StudentController {
 	 
 	//U - Update a Student NAME
 	@PutMapping("/updateStudentProfile")
-	public StudentEntity updateStudentName(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
-		return sserv.updateStudentName(username, newStudentDetails);
+	public StudentEntity updateStudentName(@RequestParam int student_id,@RequestBody StudentEntity newStudentDetails){
+		return sserv.updateStudentName(student_id, newStudentDetails);
 	}
 	
 	//U - Update a Student NAME
 	@PutMapping("/updateStudentPassword")
 	public ResponseEntity<Object> updateStudentPassword(
-	    @RequestParam String username,
+	    @RequestParam int student_id,
 	    @RequestBody UpdatePasswordRequest request
 	) {
 	    try {
-	        StudentEntity updatedStudent = sserv.updateStudentPassword(username, request);
+	        StudentEntity updatedStudent = sserv.updateStudentPassword(student_id, request);
 	        return ResponseEntity.ok(updatedStudent);
 	    } catch (NoSuchElementException e) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -112,46 +134,34 @@ public class StudentController {
 	    }
 	}
 
+	////////////ACHIEVEMENTS//////////
+	//ADD EXISTING ACHIEVEMENTS TO USER
+	@PostMapping("/{student_id}/achievements/{achievement_id}")
+    public ResponseEntity<Object> linkAchievementToStudent(
+            @PathVariable int student_id,
+            @PathVariable int achievement_id) {
+        try {
+            AchievementEntity linkedAchievement = sserv.linkAchievementToStudent(student_id, achievement_id);
+            return ResponseEntity.ok(linkedAchievement);
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 	
-	////////////ACHIEVEMENTS
-	//ADD ACHIVEMENTS
-	@PostMapping("/{username}/addAchievement/{achievement_id}")
-	public ResponseEntity<String> addAchievementToStudent(
-		@PathVariable String username,
-		@PathVariable int achievement_id) {
-
-		// Find the student by username
-		StudentEntity student = sserv.findStudentByUsername(username);
-		if (student == null) {
-				return ResponseEntity.notFound().build();
-		}
-
-		// Find the achievement by ID
-		AchievementEntity achievement = achieveServ.findAchievementById(achievement_id);
-		if (achievement == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		// Add the achievement to the student's list
-		student.getAchievements().add(achievement);
-		sserv.updateStudent(username, student); // Assuming you have a method to save/update a student
-		return ResponseEntity.ok("Achievement added to the student successfully.");
-	}
 	
 	//VIEW ACHIEVEMENTS
-	// Endpoint to view achievements for a specific student
-    @GetMapping("/{username}/achievements")
-    public ResponseEntity<List<AchievementEntity>> viewAchievements(@PathVariable String username) {
-        // Find the student by username
-        StudentEntity student = sserv.findStudentByUsername(username);
-
-        if (student == null) {
-            return ResponseEntity.notFound().build();
+	@GetMapping("/{student_id}/achievements")
+    public ResponseEntity<Object> getStudentAchievements(@PathVariable int student_id) {
+        try {
+            List<AchievementEntity> achievements = sserv.getStudentAchievements(student_id);
+            return ResponseEntity.ok(achievements);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-
-        // Get the achievements for the student
-        List<AchievementEntity> achievements = student.getAchievements();
-        return ResponseEntity.ok(achievements);
     }
 }
 

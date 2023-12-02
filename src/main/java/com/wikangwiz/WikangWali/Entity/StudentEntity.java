@@ -20,7 +20,7 @@ public class StudentEntity{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int student_id;
 	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	private String username;
 	
 	@Column(name = "firstname")
@@ -32,23 +32,26 @@ public class StudentEntity{
 	@Column(nullable = false)
 	private String password;
 	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	private String email;
 	
-	private int isDeleted;
+	private boolean isDeleted;
 	
 	private boolean isAdmin;
 	
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<AchievementEntity> achievements;
     
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<ProgressTrackerEntity> progTrackers;
 
     public StudentEntity() {
         this.achievements = new ArrayList<>(); // Initialize the achievements list
+        this.progTrackers = new ArrayList<>(); // Initialize the progTrackers list
     }
 
 	public StudentEntity(int student_id, String username, String fname, String lname, String password, String email,
-			int isDeleted, boolean isAdmin, List<AchievementEntity> achievements) {
+			boolean isDeleted, boolean isAdmin, List<AchievementEntity> achievements, List<ProgressTrackerEntity> progTrackers) {
 		super();
 		this.student_id = student_id;
 		this.username = username;
@@ -59,87 +62,64 @@ public class StudentEntity{
 		this.isDeleted = isDeleted;
 		this.isAdmin = false;
 		this.achievements = achievements != null ? achievements : new ArrayList<>(); // Initialize the achievements list
+		this.progTrackers = progTrackers != null ? progTrackers : new ArrayList<>(); // Initialize the progTrackers list
 	}
 
 	public int getStudent_id() {
 		return student_id;
 	}
 
-
 	public void setStudent_id(int student_id) {
 		this.student_id = student_id;
 	}
-
 
 	public String getUsername() {
 		return username;
 	}
 
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
 
 	public String getFname() {
 		return fname;
 	}
 
-
 	public void setFname(String fname) {
 		this.fname = fname;
 	}
-
 
 	public String getLname() {
 		return lname;
 	}
 
-
 	public void setLname(String lname) {
 		this.lname = lname;
 	}
-
 
 	public String getPassword() {
 		return password;
 	}
 
-
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
 
 	public String getEmail() {
 		return email;
 	}
 
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-
-	public int getIsDeleted() {
+	public boolean getIsDeleted() {
 		return isDeleted;
 	}
 
-
-	public void setIsDeleted(int isDeleted) {
+	public void setIsDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
-
-
-	public List<AchievementEntity> getAchievements() {
-		return achievements;
-	}
-
-
-	public void setAchievements(List<AchievementEntity> achievements) {
-		this.achievements = achievements;
-	}
-
 
 	public boolean isAdmin() {
 		return isAdmin;
@@ -150,6 +130,21 @@ public class StudentEntity{
 		this.isAdmin = isAdmin;
 	}
 	
-	
+		public List<AchievementEntity> getAchievements() {
+		return achievements;
+	}
+
+
+	public void setAchievements(List<AchievementEntity> achievements) {
+		this.achievements = achievements;
+	}
+
+	public List<ProgressTrackerEntity> getProgTrackers() {
+		return progTrackers;
+	}
+
+	public void setProgTrackers(List<ProgressTrackerEntity> progTrackers) {
+		this.progTrackers = progTrackers;
+	}
 	
 }

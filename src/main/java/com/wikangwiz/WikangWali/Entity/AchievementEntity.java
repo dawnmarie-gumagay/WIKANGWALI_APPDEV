@@ -6,6 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -25,7 +26,8 @@ public class AchievementEntity {
     private AchievementStatus achievement_status;
 
     @ManyToOne
-    private StudentEntity user;
+    @JoinColumn(name = "student_id")
+    private StudentEntity student;
 
     // Enums for Achievement Status
     public enum AchievementStatus {
@@ -40,13 +42,13 @@ public class AchievementEntity {
 	}
 
 	public AchievementEntity(int achievement_id, String achievement_name, String achievement_desc,
-			AchievementStatus achievement_status, StudentEntity user) {
+			AchievementStatus achievement_status, StudentEntity student) {
 		super();
 		this.achievement_id = achievement_id;
 		this.achievement_name = achievement_name;
 		this.achievement_desc = achievement_desc;
 		this.achievement_status = achievement_status;
-		this.user = user;
+		this.student = student;
 	}
 
 	public int getAchievement_id() {
@@ -81,12 +83,12 @@ public class AchievementEntity {
 		this.achievement_status = achievement_status;
 	}
 
-	public StudentEntity getUser() {
-		return user;
+	public StudentEntity getStudent() {
+		return student;
 	}
 
-	public void setUser(StudentEntity user) {
-		this.user = user;
+	public void setStudent(StudentEntity student) {
+		this.student = student;
 	}
 	
 	

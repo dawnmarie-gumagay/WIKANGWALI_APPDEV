@@ -53,5 +53,4 @@ public class AchievementController {
 	public String deleteAchievement(@PathVariable int achievement_id){
 		return achieveServ.deleteAchievement(achievement_id);
 	}
-
 }
