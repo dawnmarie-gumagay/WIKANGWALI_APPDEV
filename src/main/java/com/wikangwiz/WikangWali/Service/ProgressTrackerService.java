@@ -41,7 +41,6 @@ public class ProgressTrackerService {
 			progressTracker.setActName(newProgressTrackerDetails.getActName());
 			progressTracker.setCompleted(newProgressTrackerDetails.isCompleted());
 			progressTracker.setProgPerc(newProgressTrackerDetails.getProgPerc());
-			progressTracker.setStudent(newProgressTrackerDetails.getStudent());
 		}
 		catch(NoSuchElementException ex){
 			new NoSuchElementException("Achievement "+ tracker_id + " does not exist!");

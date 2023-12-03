@@ -107,5 +107,4 @@ public class AchievementService {
 	        throw new NoSuchElementException("Student with ID " + student_id + " does not exist!");
 	    }
 	}
-	
 }

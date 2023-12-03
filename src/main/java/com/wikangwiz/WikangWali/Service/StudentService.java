@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
+import com.wikangwiz.WikangWali.Entity.ProgressTrackerEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Methods.EmailAlreadyExistsException;
@@ -78,6 +79,7 @@ public class StudentService {
     public List<StudentEntity> getAllDeletedStudents() {
         return srepo.findByIsDeletedTrue();
     }
+    
 	////////////////////////
 	//U - UPDATE student
 	@SuppressWarnings("finally")
@@ -278,18 +280,27 @@ public class StudentService {
 	        }
 	    }
 	 
-	 ////////////////////////////////////ACHIEVEMNTS
-	 //VIEW ACHIEVEMENTS
-	 public List<AchievementEntity> getStudentAchievements(int studentId) {
-		    // Fetch the student by ID
-		    StudentEntity student = srepo.findById(studentId);
-
-		    if (student == null) {
-		        throw new NoSuchElementException("Student with ID " + studentId + " not found");
-		    }
-
-		    // Return the achievements associated with the student
-		    return student.getAchievements();
+	////////////////////////////////////ACHIEVEMNTS
+	//VIEW ACHIEVEMENTS
+	public List<AchievementEntity> getStudentAchievements(int student_id) {
+	StudentEntity student = srepo.findById(student_id);
+	
+		if (student == null) {
+	        throw new NoSuchElementException("Student with ID " + student_id + " not found");
 		}
-
+		return student.getAchievements();
+	}
+	
+	
+	////////////////////////////////////PROGRESS TRACKER
+	//PROGRESS TRACKERSS
+	public List<ProgressTrackerEntity> getStudentProgressT(int student_id) {
+	StudentEntity student = srepo.findById(student_id);
+	
+		if (student == null) {
+	        throw new NoSuchElementException("Student with ID " + student_id + " not found");
+		}
+		return student.getProgTrackers();
+	}
+	
 }

@@ -3,13 +3,14 @@ package com.wikangwiz.WikangWali.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -39,15 +40,26 @@ public class StudentEntity{
 	
 	private boolean isAdmin;
 	
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+	@ManyToMany
+    @JoinTable(
+    		name="students_achievements",
+    		joinColumns = @JoinColumn(name = "student_id"),
+    		inverseJoinColumns = @JoinColumn(name = "achievement_id")
+    )
     private List<AchievementEntity> achievements;
     
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+	@ManyToMany
+    @JoinTable(
+    		name="students_progTrackers",
+    		joinColumns = @JoinColumn(name = "student_id"),
+    		inverseJoinColumns = @JoinColumn(name = "tracker_id")
+    )
     private List<ProgressTrackerEntity> progTrackers;
-
+	
     public StudentEntity() {
         this.achievements = new ArrayList<>(); // Initialize the achievements list
         this.progTrackers = new ArrayList<>(); // Initialize the progTrackers list
+        this.isAdmin = false;
     }
 
 	public StudentEntity(int student_id, String username, String fname, String lname, String password, String email,
@@ -60,7 +72,7 @@ public class StudentEntity{
 		this.password = password;
 		this.email = email;
 		this.isDeleted = isDeleted;
-		this.isAdmin = false;
+		this.isAdmin = isAdmin;
 		this.achievements = achievements != null ? achievements : new ArrayList<>(); // Initialize the achievements list
 		this.progTrackers = progTrackers != null ? progTrackers : new ArrayList<>(); // Initialize the progTrackers list
 	}
@@ -145,6 +157,15 @@ public class StudentEntity{
 
 	public void setProgTrackers(List<ProgressTrackerEntity> progTrackers) {
 		this.progTrackers = progTrackers;
+	}
+
+	public void addAchievement(AchievementEntity achievement) {
+		achievements.add(achievement);
+	}
+
+	public void addProgressTracker(ProgressTrackerEntity progTrack) {
+		progTrackers.add(progTrack);
+		
 	}
 	
 }

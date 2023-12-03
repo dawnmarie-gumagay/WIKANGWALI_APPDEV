@@ -31,8 +31,8 @@ public class ProgressTrackerController {
 	}
 	
 	//C - Create new record for tblprogTracker
-	@PostMapping("/insertAchievement")
-	public ProgressTrackerEntity insertAchievement(@RequestBody ProgressTrackerEntity progTracker) {
+	@PostMapping("/insertProgressTracker")
+	public ProgressTrackerEntity insertProgressTracker(@RequestBody ProgressTrackerEntity progTracker) {
 		return ptServ.insertProgressTracker(progTracker);
 	}
 	
@@ -50,7 +50,7 @@ public class ProgressTrackerController {
 	
 	//D - Delete a progTracker record.
 	@DeleteMapping("/deleteProgressTracker/{tracker_id}")
-	public String deleteAchievement(@PathVariable int tracker_id){
+	public String deleteProgressTracker(@PathVariable int tracker_id){
 		return ptServ.deleteProgressTracker(tracker_id);
 	}
 

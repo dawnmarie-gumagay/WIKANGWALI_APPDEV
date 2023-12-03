@@ -9,6 +9,4 @@ import com.wikangwiz.WikangWali.Entity.AchievementEntity;
 @Repository
 public interface AchievementRepository extends JpaRepository<AchievementEntity, Integer>{
 	AchievementEntity findById(int achievement_id);
-	
-	
 }

@@ -1,14 +1,18 @@
 package com.wikangwiz.WikangWali.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="tblachievement")
@@ -25,9 +29,9 @@ public class AchievementEntity {
     @Enumerated(EnumType.STRING)
     private AchievementStatus achievement_status;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id")
-    private StudentEntity student;
+    @JsonIgnore
+	@ManyToMany(mappedBy = "achievements")
+    private List<StudentEntity> studentsAchieve;
 
     // Enums for Achievement Status
     public enum AchievementStatus {
@@ -39,17 +43,22 @@ public class AchievementEntity {
 	
 	public AchievementEntity() {
 		super();
+    	this.studentsAchieve = new ArrayList<>(); // Initialize the students list
 	}
 
+	
+	
 	public AchievementEntity(int achievement_id, String achievement_name, String achievement_desc,
-			AchievementStatus achievement_status, StudentEntity student) {
+			AchievementStatus achievement_status, List<StudentEntity> studentsAchieve) {
 		super();
 		this.achievement_id = achievement_id;
 		this.achievement_name = achievement_name;
 		this.achievement_desc = achievement_desc;
 		this.achievement_status = achievement_status;
-		this.student = student;
+		this.studentsAchieve = studentsAchieve;
 	}
+
+
 
 	public int getAchievement_id() {
 		return achievement_id;
@@ -83,13 +92,18 @@ public class AchievementEntity {
 		this.achievement_status = achievement_status;
 	}
 
-	public StudentEntity getStudent() {
-		return student;
+	public List<StudentEntity> getStudentsAchieve() {
+		return studentsAchieve;
 	}
 
-	public void setStudent(StudentEntity student) {
-		this.student = student;
+	public void setStudentsAchieve(List<StudentEntity> studentsAchieve) {
+		this.studentsAchieve = studentsAchieve;
 	}
-	
-	
+
+
+	////////////////////////
+	public void addStudent(StudentEntity student) {
+		studentsAchieve.add(student);
+	}
+
 }

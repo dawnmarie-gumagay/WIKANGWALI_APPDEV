@@ -1,13 +1,16 @@
 package com.wikangwiz.WikangWali.Entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="tblprogresstracker")
@@ -21,26 +24,30 @@ public class ProgressTrackerEntity {
 	 
 	 private boolean isCompleted;
 	 
-	 @Column(name = "progresspercent")
-	 private int progPerc;
+	@Column(name = "progresspercent")
+	private int progPerc;
 	 
-	 @ManyToOne
-	 @JoinColumn(name = "student_id")
-	 private StudentEntity student;
+	@JsonIgnore
+	@ManyToMany(mappedBy = "progTrackers")
+    private List<StudentEntity> studentsProg;
+	 
 
 	public ProgressTrackerEntity() {
 		super();
+		this.isCompleted = false;
 	}
 
 	public ProgressTrackerEntity(int tracker_id, String actName, boolean isCompleted, int progPerc,
-			StudentEntity student) {
+			List<StudentEntity> studentsProg) {
 		super();
 		this.tracker_id = tracker_id;
 		this.actName = actName;
 		this.isCompleted = isCompleted;
 		this.progPerc = progPerc;
-		this.student = student;
+		this.studentsProg = studentsProg;
 	}
+
+
 
 	public int getTracker_id() {
 		return tracker_id;
@@ -74,12 +81,12 @@ public class ProgressTrackerEntity {
 		this.progPerc = progPerc;
 	}
 
-	public StudentEntity getStudent() {
-		return student;
+	public List<StudentEntity> getStudentsProg() {
+		return studentsProg;
 	}
 
-	public void setStudent(StudentEntity student) {
-		this.student = student;
+	public void setStudentsProg(List<StudentEntity> studentsProg) {
+		this.studentsProg = studentsProg;
 	}
-
+	
 }

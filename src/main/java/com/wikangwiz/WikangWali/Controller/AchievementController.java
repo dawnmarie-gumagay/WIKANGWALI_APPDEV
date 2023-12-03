@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
+import com.wikangwiz.WikangWali.Repository.AchievementRepository;
+import com.wikangwiz.WikangWali.Repository.StudentRepository;
 import com.wikangwiz.WikangWali.Service.AchievementService;
 
 @RestController
@@ -24,6 +26,12 @@ public class AchievementController {
 	
 	@Autowired
 	AchievementService achieveServ;
+	
+	@Autowired
+	AchievementRepository achieveRepo;
+	
+	@Autowired
+	StudentRepository srepo;
 	
 	@GetMapping("/print")
 	public String printHello(){
@@ -53,4 +61,6 @@ public class AchievementController {
 	public String deleteAchievement(@PathVariable int achievement_id){
 		return achieveServ.deleteAchievement(achievement_id);
 	}
+	
+	
 }
