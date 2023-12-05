@@ -126,18 +126,18 @@ public class StudentController {
 	 
 	//U - Update a Student NAME
 	@PutMapping("/updateStudentProfile")
-	public StudentEntity updateStudentName(@RequestParam int student_id,@RequestBody StudentEntity newStudentDetails){
-		return sserv.updateStudentName(student_id, newStudentDetails);
+	public StudentEntity updateStudentName(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
+		return sserv.updateStudentName(username, newStudentDetails);
 	}
 	
 	//U - Update a Student NAME
 	@PutMapping("/updateStudentPassword")
 	public ResponseEntity<Object> updateStudentPassword(
-	    @RequestParam int student_id,
+	    @RequestParam String username,
 	    @RequestBody UpdatePasswordRequest request
 	) {
 	    try {
-	        StudentEntity updatedStudent = sserv.updateStudentPassword(student_id, request);
+	        StudentEntity updatedStudent = sserv.updateStudentPassword(username, request);
 	        return ResponseEntity.ok(updatedStudent);
 	    } catch (NoSuchElementException e) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -150,11 +150,11 @@ public class StudentController {
 
 	////////////ACHIEVEMENTS//////////
 	//ADD EXISTING ACHIEVEMENTS TO USER
-	@PutMapping("/{student_id}/achievements/{achievement_id}")
+	@PutMapping("/{username}/achievements/{achievement_id}")
 	StudentEntity addAchievementToStudent(
-		@PathVariable int student_id,
+		@PathVariable String username,
 		@PathVariable int achievement_id){
-			StudentEntity student = srepo.findById(student_id);
+			StudentEntity student = srepo.findByUsername(username);
 			AchievementEntity achievement = achieveRepo.findById(achievement_id);
 			
 			student.addAchievement(achievement);
@@ -162,10 +162,10 @@ public class StudentController {
 	}
 	
 	//VIEW ACHIEVEMENTS OF USER
-	@GetMapping("/{student_id}/ViewStudentAchievements")
-    public ResponseEntity<List<AchievementEntity>> getStudentAchievements(@PathVariable int student_id) {
+	@GetMapping("/{username}/ViewStudentAchievements")
+    public ResponseEntity<List<AchievementEntity>> getStudentAchievements(@PathVariable String username) {
         try {
-            List<AchievementEntity> achievements = sserv.getStudentAchievements(student_id);
+            List<AchievementEntity> achievements = sserv.getStudentAchievements(username);
             return ResponseEntity.ok(achievements);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
@@ -177,11 +177,11 @@ public class StudentController {
 	
 	////////////PROGRESS TRACKERS//////////
 	//ADD EXISTING TRACKERS TO USER
-	@PutMapping("/{student_id}/progTrackers/{tracker_id}")
+	@PutMapping("/{username}/progTrackers/{tracker_id}")
 	StudentEntity addProgressTrackerToStudent(
-		@PathVariable int student_id,
+		@PathVariable String username,
 		@PathVariable int tracker_id){
-			StudentEntity student = srepo.findById(student_id);
+			StudentEntity student = srepo.findByUsername(username);
 			ProgressTrackerEntity progTrack = progtRepo.findById(tracker_id);
 			
 			student.addProgressTracker(progTrack);
@@ -189,17 +189,17 @@ public class StudentController {
 	}
 	
 	//VIEW PROGRESS TRACKER OF USER
-		@GetMapping("/{student_id}/ViewStudentProgressT")
-	    public ResponseEntity<List<ProgressTrackerEntity>> getStudentProgressT(@PathVariable int student_id) {
-	        try {
-	            List<ProgressTrackerEntity> progTrackers = sserv.getStudentProgressT(student_id);
-	            return ResponseEntity.ok(progTrackers);
-	        } catch (NoSuchElementException e) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-	        } catch (Exception e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
-	        }
-	    }
+	@GetMapping("/{username}/ViewStudentProgressT")
+    public ResponseEntity<List<ProgressTrackerEntity>> getStudentProgressT(@PathVariable String username) {
+		try {
+			List<ProgressTrackerEntity> progTrackers = sserv.getStudentProgressT(username);
+			return ResponseEntity.ok(progTrackers);
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+		}
+	}
 	
 	
 }

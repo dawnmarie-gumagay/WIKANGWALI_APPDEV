@@ -146,11 +146,11 @@ public class StudentService {
 	
 	//U - Update a STUDENT NAME & EMAIL
 	@SuppressWarnings("finally")
-	public StudentEntity updateStudentName(int student_id, StudentEntity newStudentDetails) {
+	public StudentEntity updateStudentName(String username, StudentEntity newStudentDetails) {
 		StudentEntity student = new StudentEntity();
 		try {
 			//1.)search the id number of Student that will be updated
-			student = srepo.findById(student_id);
+			student = srepo.findByUsername(username);
 					
 			//2.) update the record
 			student.setFname(newStudentDetails.getFname());
@@ -158,21 +158,21 @@ public class StudentService {
 			student.setEmail(newStudentDetails.getEmail());
 
 		}catch(NoSuchElementException ex) {
-			throw new NoSuchElementException("Student "+ student_id + " does not exist!");
+			throw new NoSuchElementException("Student "+ username + " does not exist!");
 		}finally {
 			return srepo.save(student);
 		}
 	}
 		
 	// U - Update a STUDENT PASSWORD
-	public StudentEntity updateStudentPassword(int student_id, UpdatePasswordRequest request) {
+	public StudentEntity updateStudentPassword(String username, UpdatePasswordRequest request) {
 	    try {
 	        // 1. Retrieve the student by username
-	        StudentEntity student = srepo.findById(student_id);
+	        StudentEntity student = srepo.findByUsername(username);
 
 	        // 2. Check if the student exists
 	        if (student == null) {
-	            throw new NoSuchElementException("Student " + student_id + " does not exist!");
+	            throw new NoSuchElementException("Student " + username + " does not exist!");
 	        }
 
 	        // 3. Check if the old password matches the current password
@@ -282,11 +282,11 @@ public class StudentService {
 	 
 	////////////////////////////////////ACHIEVEMNTS
 	//VIEW ACHIEVEMENTS
-	public List<AchievementEntity> getStudentAchievements(int student_id) {
-	StudentEntity student = srepo.findById(student_id);
+	public List<AchievementEntity> getStudentAchievements(String username) {
+	StudentEntity student = srepo.findByUsername(username);
 	
 		if (student == null) {
-	        throw new NoSuchElementException("Student with ID " + student_id + " not found");
+	        throw new NoSuchElementException("Student " + username + " not found");
 		}
 		return student.getAchievements();
 	}
@@ -294,11 +294,11 @@ public class StudentService {
 	
 	////////////////////////////////////PROGRESS TRACKER
 	//PROGRESS TRACKERSS
-	public List<ProgressTrackerEntity> getStudentProgressT(int student_id) {
-	StudentEntity student = srepo.findById(student_id);
+	public List<ProgressTrackerEntity> getStudentProgressT(String username) {
+	StudentEntity student = srepo.findByUsername(username);
 	
 		if (student == null) {
-	        throw new NoSuchElementException("Student with ID " + student_id + " not found");
+	        throw new NoSuchElementException("Student " + username + " not found");
 		}
 		return student.getProgTrackers();
 	}
