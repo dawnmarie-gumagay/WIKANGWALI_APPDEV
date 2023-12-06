@@ -56,14 +56,28 @@ public class StudentEntity{
     )
     private List<ProgressTrackerEntity> progTrackers;
 	
+	@ManyToMany
+    @JoinTable(
+    		name="students_points",
+    		joinColumns = @JoinColumn(name = "student_id"),
+    		inverseJoinColumns = @JoinColumn(name = "point_id")
+    )
+    private List<PointEntity> points;
+	
+	
+	
+	
+	
     public StudentEntity() {
         this.achievements = new ArrayList<>(); // Initialize the achievements list
         this.progTrackers = new ArrayList<>(); // Initialize the progTrackers list
+        this.points = new ArrayList<>(); // Initialize the points list
         this.isAdmin = false;
     }
 
 	public StudentEntity(int student_id, String username, String fname, String lname, String password, String email,
-			boolean isDeleted, boolean isAdmin, List<AchievementEntity> achievements, List<ProgressTrackerEntity> progTrackers) {
+			boolean isDeleted, boolean isAdmin, List<AchievementEntity> achievements,
+			List<ProgressTrackerEntity> progTrackers, List<PointEntity> points) {
 		super();
 		this.student_id = student_id;
 		this.username = username;
@@ -75,6 +89,7 @@ public class StudentEntity{
 		this.isAdmin = isAdmin;
 		this.achievements = achievements != null ? achievements : new ArrayList<>(); // Initialize the achievements list
 		this.progTrackers = progTrackers != null ? progTrackers : new ArrayList<>(); // Initialize the progTrackers list
+		this.points = points != null ? points : new ArrayList<>(); // Initialize the points list
 	}
 
 	public int getStudent_id() {
@@ -165,7 +180,19 @@ public class StudentEntity{
 
 	public void addProgressTracker(ProgressTrackerEntity progTrack) {
 		progTrackers.add(progTrack);
-		
+	}
+
+	public List<PointEntity> getPoints() {
+		return points;
+	}
+
+	public void setPoints(List<PointEntity> points) {
+		this.points = points;
+	}
+
+	public void addPoint(PointEntity point) {
+		// TODO Auto-generated method stub
+		points.add(point);
 	}
 	
 }

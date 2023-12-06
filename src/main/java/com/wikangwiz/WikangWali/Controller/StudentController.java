@@ -19,15 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
+import com.wikangwiz.WikangWali.Entity.PointEntity;
 import com.wikangwiz.WikangWali.Entity.ProgressTrackerEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Methods.LoginResponse;
 import com.wikangwiz.WikangWali.Methods.UpdatePasswordRequest;
 import com.wikangwiz.WikangWali.Repository.AchievementRepository;
+import com.wikangwiz.WikangWali.Repository.PointRepository;
 import com.wikangwiz.WikangWali.Repository.ProgressTrackerRepository;
 import com.wikangwiz.WikangWali.Repository.StudentRepository;
-import com.wikangwiz.WikangWali.Service.AchievementService;
 import com.wikangwiz.WikangWali.Service.StudentService;
 
 @RestController
@@ -39,9 +40,6 @@ public class StudentController {
 	StudentService sserv;
 	
 	@Autowired
-	AchievementService achieveServ;
-	
-	@Autowired
 	StudentRepository srepo;
 	
 	@Autowired
@@ -49,6 +47,9 @@ public class StudentController {
 	
 	@Autowired
 	ProgressTrackerRepository progtRepo;
+	
+	@Autowired
+	PointRepository pRepo;
 	
 	//////FOR CHECKING//////
 	@GetMapping("/print")
@@ -201,6 +202,31 @@ public class StudentController {
 		}
 	}
 	
+	////////////POINTS//////////
+	//ADD EXISTING POINTS TO USER
+	@PutMapping("/{username}/points/{point_id}")
+	StudentEntity addPointsToStudent(
+	@PathVariable String username,
+	@PathVariable int point_id){
+		StudentEntity student = srepo.findByUsername(username);
+		PointEntity point = pRepo.findById(point_id);
+		
+		student.addPoint(point);
+		return srepo.save(student);
+	}
+	
+	//VIEW POINTS OF USER
+	@GetMapping("/{username}/ViewStudentPoints")
+	public ResponseEntity<List<PointEntity>> getStudentPoints(@PathVariable String username) {
+	try {
+		List<PointEntity> points = sserv.getStudentPoints(username);
+		return ResponseEntity.ok(points);
+	} catch (NoSuchElementException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+	} catch (Exception e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+	}
+	}
 	
 }
 

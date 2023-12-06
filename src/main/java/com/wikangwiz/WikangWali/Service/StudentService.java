@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
+import com.wikangwiz.WikangWali.Entity.PointEntity;
 import com.wikangwiz.WikangWali.Entity.ProgressTrackerEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
@@ -301,6 +302,17 @@ public class StudentService {
 	        throw new NoSuchElementException("Student " + username + " not found");
 		}
 		return student.getProgTrackers();
+	}
+	
+	////////////////////////////////////POINTS
+	//POINTSS
+	public List<PointEntity> getStudentPoints(String username) {
+		StudentEntity student = srepo.findByUsername(username);
+		
+		if (student == null) {
+			throw new NoSuchElementException("Student " + username + " not found");
+		}
+		return student.getPoints();
 	}
 	
 }
