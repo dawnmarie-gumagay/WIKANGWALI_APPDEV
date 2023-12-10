@@ -2,6 +2,7 @@ package com.wikangwiz.WikangWali.Controller;
 
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.ForgotPasswordRequest;
+import com.wikangwiz.WikangWali.Methods.ResetCodeResponse;
 import com.wikangwiz.WikangWali.Methods.ResetPasswordRequest;
 import com.wikangwiz.WikangWali.Service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +13,24 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/student/forgotPassword")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ForgotPasswordController {
 
     @Autowired
-    private StudentService studentService;
+    private StudentService sserv;
 
     // Endpoint for initiating the forgot password process
     @PostMapping("/generateCode")
-    public ResponseEntity<String> generateResetCode(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<ResetCodeResponse> generateResetCode(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         String username = forgotPasswordRequest.getUsername();
 
         try {
-            StudentEntity student = studentService.findStudentByUsername(username);
+            StudentEntity student = sserv.findStudentByUsername(username);
             if (student == null || student.getIsDeleted()) {
                 throw new IllegalArgumentException("Student not found with username: " + username);
             }
+            
+            
             // Generate a random 4-digit code
             int resetCode = new Random().nextInt(9000) + 1000;
 
@@ -35,27 +39,31 @@ public class ForgotPasswordController {
 
             // Store the reset code in the database
             student.setResetCode(resetCode);
-            studentService.updateStudentObject(student);
+            sserv.updateStudentObject(student);
             System.out.print(" The reset code for " + username+ " is " + resetCode);
 
-            return ResponseEntity.ok("Reset code generated successfully. Check console for the code.");
+            return ResponseEntity.ok(new ResetCodeResponse("Reset code generated successfully. Check database for the code."));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ResetCodeResponse(e.getMessage()));
         }
     }
-
+    
     // Endpoint for resetting the password after confirming the reset code
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+    public ResponseEntity<ResetCodeResponse> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         String username = resetPasswordRequest.getUsername();
         int resetCode = resetPasswordRequest.getResetCode();
         String newPassword = resetPasswordRequest.getNewPassword();
         String confirmPassword = resetPasswordRequest.getConfirmPassword();
 
         try {
-            StudentEntity student = studentService.findStudentByUsername(username);
+            StudentEntity student = sserv.findStudentByUsername(username);
 
-            if (student == null || student.getIsDeleted()) {
+            if (student == null) {
+                throw new IllegalArgumentException("Student not found with username: " + username);
+            }
+            
+            if (student.getIsDeleted()==true) {
                 throw new IllegalArgumentException("Student not found with username: " + username);
             }
 
@@ -77,11 +85,11 @@ public class ForgotPasswordController {
             student.setPassword(newPassword);
             student.setResetCode(0); // Clear the reset code after successful reset
 
-            studentService.updateStudentObject(student);
+            sserv.updateStudentObject(student);
 
-            return ResponseEntity.ok("Password reset successfully.");
+            return ResponseEntity.ok(new ResetCodeResponse("Password reset successfully!"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        	return ResponseEntity.badRequest().body(new ResetCodeResponse(e.getMessage()));
         }
     }
 }

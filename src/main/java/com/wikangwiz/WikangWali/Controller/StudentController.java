@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,13 +123,13 @@ public class StudentController {
 		 return sserv.getStudentByUsername(username);
 	 }
 	 
-	//U - Update a Student NAME
+	//U - Update a Student PROFILE (USED IN REACT)
 	@PutMapping("/updateStudentProfile")
-	public StudentEntity updateStudentName(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
-		return sserv.updateStudentName(username, newStudentDetails);
+	public StudentEntity updateStudentProfile(@RequestParam String username,@RequestBody StudentEntity newStudentDetails){
+		return sserv.updateStudentProfile(username, newStudentDetails);
 	}
 	
-	//U - Update a Student PASSWORD
+	//U - Update a Student PASSWORD (USED IN REACT)
 	@PutMapping("/updateStudentPassword")
 	public ResponseEntity<Object> updateStudentPassword(
 	    @RequestParam String username,
@@ -145,20 +147,22 @@ public class StudentController {
 	    }
 	}
 	
-	//UPDATE
-
+	
 	////////////ACHIEVEMENTS//////////
 	//ADD EXISTING ACHIEVEMENTS TO USER
-	@PutMapping("/{username}/achievements/{achievement_id}")
-	StudentEntity addAchievementToStudent(
-		@PathVariable String username,
-		@PathVariable int achievement_id){
-			StudentEntity student = srepo.findByUsername(username);
-			AchievementEntity achievement = achieveRepo.findById(achievement_id);
-			
-			student.addAchievement(achievement);
-			return srepo.save(student);
-	}
+	@PutMapping("/{username}/achievements/{achievementId}")
+    public ResponseEntity<?> addAchievementToStudent(
+            @PathVariable String username,
+            @PathVariable int achievementId) {
+        try {
+            StudentEntity updatedStudent = sserv.addAchievementToStudent(username, achievementId);
+            return ResponseEntity.ok(updatedStudent);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 	
 	//VIEW ACHIEVEMENTS OF USER
 	@GetMapping("/{username}/ViewStudentAchievements")
@@ -176,17 +180,20 @@ public class StudentController {
 	
 	////////////PROGRESS TRACKERS//////////
 	//ADD EXISTING TRACKERS TO USER
-	@PutMapping("/{username}/progTrackers/{tracker_id}")
-	StudentEntity addProgressTrackerToStudent(
-		@PathVariable String username,
-		@PathVariable int tracker_id){
-			StudentEntity student = srepo.findByUsername(username);
-			ProgressTrackerEntity progTrack = progtRepo.findById(tracker_id);
-			
-			student.addProgressTracker(progTrack);
-			return srepo.save(student);
-	}
-	
+	@PutMapping("/{username}/progTrackers/{trackerId}")
+    public ResponseEntity<?> addProgressTrackerToStudent(
+            @PathVariable String username,
+            @PathVariable int trackerId) {
+        try {
+            StudentEntity updatedStudent = sserv.addProgressTrackerToStudent(username, trackerId);
+            return ResponseEntity.ok(updatedStudent);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 	//VIEW PROGRESS TRACKER OF USER
 	@GetMapping("/{username}/ViewStudentProgressT")
     public ResponseEntity<List<ProgressTrackerEntity>> getStudentProgressT(@PathVariable String username) {
@@ -199,7 +206,10 @@ public class StudentController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
 		}
 	}
+	
+	
 	/////////////////////
+	
 	//STAR PTS
 	@PutMapping("/{username}/addPtStar/{numberOfStars}")
     public ResponseEntity<String> addPtStarToStudent(
