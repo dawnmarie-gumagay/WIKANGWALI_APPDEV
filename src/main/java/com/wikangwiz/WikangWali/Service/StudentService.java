@@ -2,7 +2,6 @@ package com.wikangwiz.WikangWali.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -136,29 +135,35 @@ public class StudentService {
 	}
 
 	//U - Update a STUDENT NAME & EMAIL (isDeleted is considered)
-	@SuppressWarnings("finally")
 	public StudentEntity updateStudentProfile(String username, StudentEntity newStudentDetails) {
-	    StudentEntity student = new StudentEntity();
 	    try {
-	        //1.) search the id number of Student that will be updated
+	        // 1. Retrieve the list of students by username and isDeleted status
 	        List<StudentEntity> students = srepo.findByUsernameAndIsDeleted(username, false);
 
-	        //2.) handle the logic to choose the appropriate student
-	        student = findStudentToReturn(students);
+	        // 2. Handle the logic to choose the appropriate student
+	        StudentEntity student = findStudentToReturn(students);
 
 	        if (student != null) {
-	            //3.) update the record
+	            // 3. Check if the new email is already taken by another student
+	            if (!newStudentDetails.getEmail().equals(student.getEmail()) &&
+	                    srepo.existsByEmailAndIsDeleted(newStudentDetails.getEmail(), false)) {
+	                throw new RuntimeException("Email is already taken by another student.");
+	            }
+
+	            // 4. Update the record
 	            student.setFname(newStudentDetails.getFname());
 	            student.setLname(newStudentDetails.getLname());
 	            student.setEmail(newStudentDetails.getEmail());
 	        } else {
 	            throw new NoSuchElementException("Student " + username + " does not exist!");
 	        }
+
+	        // 5. Save the updated student
+	        return srepo.save(student);
 	    } catch (Exception ex) {
 	        // Handle other exceptions if needed
 	        ex.printStackTrace();
-	    } finally {
-	        return srepo.save(student);
+	        throw new RuntimeException("Error updating student profile: " + ex.getMessage());
 	    }
 	}
 		
