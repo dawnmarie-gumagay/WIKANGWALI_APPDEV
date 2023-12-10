@@ -3,12 +3,13 @@ package com.wikangwiz.WikangWali.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
-import com.wikangwiz.WikangWali.Entity.PointEntity;
 import com.wikangwiz.WikangWali.Entity.ProgressTrackerEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
@@ -34,7 +35,7 @@ public class StudentService {
 	    return srepo.save(student);
 	}*/
 	
-	//NEED CHECKING
+	
 	public StudentEntity insertStudent(StudentEntity student) {
 	    // Check if the username already exists in tbluser
 	    StudentEntity existingUsername = srepo.findByUsername(student.getUsername());
@@ -219,7 +220,8 @@ public class StudentService {
 	        return new LoginResponse(false, "Login Failed");
 	    }
 	}
-	 
+	
+	
 	// GET STUDENT via ID
     public ResponseEntity<StudentEntity> getStudentResponseById(int student_id) {
         StudentEntity student = srepo.findById(student_id);
@@ -304,15 +306,28 @@ public class StudentService {
 		return student.getProgTrackers();
 	}
 	
-	////////////////////////////////////POINTS
-	//POINTSS
-	public List<PointEntity> getStudentPoints(String username) {
-		StudentEntity student = srepo.findByUsername(username);
-		
-		if (student == null) {
-			throw new NoSuchElementException("Student " + username + " not found");
-		}
-		return student.getPoints();
+	/////////////////////// POINTS
+	//STAR POINTS
+	public void addPtStarToStudent(String username, int numberOfStars) {
+	    StudentEntity student = srepo.findByUsername(username);
+
+	    if (student == null) {
+	        throw new EntityNotFoundException("Student not found with id: " + username);
+	    }
+
+	    student.setPtStar(student.getPtStar() + numberOfStars);
 	}
 	
+	//DIAMOND POINTS
+		public void addPtDiasToStudent(String username, int numberOfDias) {
+		    StudentEntity student = srepo.findByUsername(username);
+
+		    if (student == null) {
+		        throw new EntityNotFoundException("Student not found with id: " + username);
+		    }
+
+		    student.setPtDia(student.getPtDia() + numberOfDias);
+		    srepo.save(student);
+		}
+
 }

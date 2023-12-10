@@ -19,14 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wikangwiz.WikangWali.Entity.AchievementEntity;
-import com.wikangwiz.WikangWali.Entity.PointEntity;
 import com.wikangwiz.WikangWali.Entity.ProgressTrackerEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Methods.LoginResponse;
 import com.wikangwiz.WikangWali.Methods.UpdatePasswordRequest;
 import com.wikangwiz.WikangWali.Repository.AchievementRepository;
-import com.wikangwiz.WikangWali.Repository.PointRepository;
 import com.wikangwiz.WikangWali.Repository.ProgressTrackerRepository;
 import com.wikangwiz.WikangWali.Repository.StudentRepository;
 import com.wikangwiz.WikangWali.Service.StudentService;
@@ -47,9 +45,6 @@ public class StudentController {
 	
 	@Autowired
 	ProgressTrackerRepository progtRepo;
-	
-	@Autowired
-	PointRepository pRepo;
 	
 	//////FOR CHECKING//////
 	@GetMapping("/print")
@@ -114,7 +109,8 @@ public class StudentController {
         LoginResponse response = sserv.login(authRequest);
         return ResponseEntity.ok(response);
     }
-	
+	////////////////////
+    
 	 @GetMapping("/getStudentResponseById/{student_id}")
 	 public ResponseEntity<StudentEntity> getStudentResponseById(@PathVariable int student_id){
 		 return sserv.getStudentResponseById(student_id);
@@ -131,7 +127,7 @@ public class StudentController {
 		return sserv.updateStudentName(username, newStudentDetails);
 	}
 	
-	//U - Update a Student NAME
+	//U - Update a Student PASSWORD
 	@PutMapping("/updateStudentPassword")
 	public ResponseEntity<Object> updateStudentPassword(
 	    @RequestParam String username,
@@ -148,6 +144,8 @@ public class StudentController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 	    }
 	}
+	
+	//UPDATE
 
 	////////////ACHIEVEMENTS//////////
 	//ADD EXISTING ACHIEVEMENTS TO USER
@@ -201,32 +199,34 @@ public class StudentController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
 		}
 	}
+	/////////////////////
+	//STAR PTS
+	@PutMapping("/{username}/addPtStar/{numberOfStars}")
+    public ResponseEntity<String> addPtStarToStudent(
+            @PathVariable String username,
+            @PathVariable int numberOfStars) {
+        try {
+            sserv.addPtStarToStudent(username, numberOfStars);
+            return ResponseEntity.ok("Successfully added "+ numberOfStars + " Star/s to Student " + username);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to add "+ numberOfStars + " Star/s to Student " + username);
+        }
+    }
 	
-	////////////POINTS//////////
-	//ADD EXISTING POINTS TO USER
-	@PutMapping("/{username}/points/{point_id}")
-	StudentEntity addPointsToStudent(
-	@PathVariable String username,
-	@PathVariable int point_id){
-		StudentEntity student = srepo.findByUsername(username);
-		PointEntity point = pRepo.findById(point_id);
-		
-		student.addPoint(point);
-		return srepo.save(student);
-	}
-	
-	//VIEW POINTS OF USER
-	@GetMapping("/{username}/ViewStudentPoints")
-	public ResponseEntity<List<PointEntity>> getStudentPoints(@PathVariable String username) {
-	try {
-		List<PointEntity> points = sserv.getStudentPoints(username);
-		return ResponseEntity.ok(points);
-	} catch (NoSuchElementException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-	} catch (Exception e) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
-	}
-	}
-	
+	//DIAS PTS
+		@PutMapping("/{username}/addPtDia/{numberOfDias}")
+	    public ResponseEntity<String> addPtDiasToStudent(
+	            @PathVariable String username,
+	            @PathVariable int numberOfDias) {
+	        try {
+	            sserv.addPtDiasToStudent(username, numberOfDias);
+	            return ResponseEntity.ok("Successfully added "+ numberOfDias + " Diamond/s to Student " + username);
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body("Failed to add "+ numberOfDias + " Diamond/s to Student " + username);
+	        }
+	    }
+
 }
 
