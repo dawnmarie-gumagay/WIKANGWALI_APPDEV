@@ -15,7 +15,8 @@ import java.util.Random;
 @RequestMapping("/student/forgotPassword")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ForgotPasswordController {
-
+	
+	////////////////////////REDUNDANT CODE BUT MIGHT BE NEEDED///////////////////////
     @Autowired
     private StudentService sserv;
 

@@ -2,6 +2,7 @@ package com.wikangwiz.WikangWali.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -15,6 +16,7 @@ import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
 import com.wikangwiz.WikangWali.Methods.EmailAlreadyExistsException;
 import com.wikangwiz.WikangWali.Methods.LoginResponse;
+import com.wikangwiz.WikangWali.Methods.ResetCodeResponse;
 import com.wikangwiz.WikangWali.Methods.UpdatePasswordRequest;
 import com.wikangwiz.WikangWali.Repository.AchievementRepository;
 import com.wikangwiz.WikangWali.Repository.ProgressTrackerRepository;
@@ -98,7 +100,7 @@ public class StudentService {
 		}
 	}
 	
-	//D - DELETE student (PERMANENTLY)
+	//D - DELETE student (PERMANENTLY) (NOT USED IN REACT)
 	public String deletePStudent(int student_id){
 		String msg = "";
 			
@@ -112,7 +114,7 @@ public class StudentService {
 		return msg;
 	}
 	
-	////D - DELETE student by UPDATING isDeleted
+	////D - DELETE student by UPDATING isDeleted (TO BE USED)
 	public StudentEntity deleteStudent(int student_id) {
 	    try {
 	        // 1. Search the student by student_id
@@ -291,11 +293,13 @@ public class StudentService {
         return null;
     }
 	 
+    //MIGHT BE USEFUL
 	 public StudentEntity findStudentByUsername(String username) {
 	       return srepo.findByUsername(username);
 	 }
 	//////////////////////////////////////////////////
 	 
+	 //OUTDATED
 	 public StudentEntity updateStudentObject(StudentEntity newStudentDetails) {
 		 try {
 			 // 1. Search the student by username
@@ -319,6 +323,75 @@ public class StudentService {
 			 throw new RuntimeException("Error updating student: " + ex.getMessage(), ex);
 		 }
 	}
+	 
+	 
+	 
+	 /////////////FORGET PASSWORD////////////
+	 //GENERATE CODE 2
+	 public ResponseEntity<ResetCodeResponse> generateResetCode(String username) {
+	        List<StudentEntity> students = srepo.findByUsernameAndIsDeleted(username, false);
+
+	        if (students.isEmpty()) {
+	            throw new IllegalArgumentException("No active student found with username: " + username);
+	        }
+
+	        StudentEntity student = students.get(0);
+
+	        try {
+	            // Generate a random 4-digit code
+	            int resetCode = new Random().nextInt(9000) + 1000;
+
+	            // TODO: Send the reset code to the user (you can use email, SMS, etc.)
+	            System.out.print("The reset code is " + resetCode);
+
+	            // Store the reset code in the database
+	            student.setResetCode(resetCode);
+	            srepo.save(student);
+	            System.out.print("The reset code for " + username + " is " + resetCode);
+
+	            return ResponseEntity.ok(new ResetCodeResponse("Reset code generated successfully. Check database for the code."));
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body(new ResetCodeResponse(e.getMessage()));
+	        }
+	    }
+	 
+	//RESET CODE UPDATE 2
+	 public ResponseEntity<ResetCodeResponse> resetPassword(String username, int resetCode, String newPassword, String confirmPassword) {
+	        List<StudentEntity> students = srepo.findByUsernameAndIsDeleted(username, false);
+
+	        if (students.isEmpty()) {
+	            throw new IllegalArgumentException("No active student found with username: " + username);
+	        }
+
+	        StudentEntity student = students.get(0);
+
+	        try {
+	            if (student.getResetCode() != resetCode) {
+	                throw new IllegalArgumentException("Invalid reset code. Please check your code again.");
+	            }
+
+	            // Check if newPassword is different from the old password
+	            if (newPassword.equals(student.getPassword())) {
+	                throw new IllegalArgumentException("New password must be different from the old password.");
+	            }
+
+	            // Check if newPassword matches confirmPassword
+	            if (!newPassword.equals(confirmPassword)) {
+	                throw new IllegalArgumentException("New password and confirm password do not match.");
+	            }
+
+	            // Update the password and reset code
+	            student.setPassword(newPassword);
+	            student.setResetCode(0); // Clear the reset code after successful reset
+
+	            srepo.save(student);
+
+	            return ResponseEntity.ok(new ResetCodeResponse("Password reset successfully!"));
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body(new ResetCodeResponse(e.getMessage()));
+	        }
+	    }
+	 
 	 
 	////////////////////////////////////ACHIEVEMNTS
 	 
@@ -371,10 +444,8 @@ public class StudentService {
 		return null;
 	}
 	
-	
 	////////////////////////////////////PROGRESS TRACKER
 	//PROGRESS TRACKERSS
-	
 	//ADD PROGRESS TRACKER TO STUDENT(isDeleted is considered)
 	public StudentEntity addProgressTrackerToStudent(String username, int trackerId) {
 		// Retrieve the list of students by username and isDeleted status
@@ -430,6 +501,53 @@ public class StudentService {
 		}
 		return null;
 		}
+	
+	// Increment the progress of a specific progress tracker for a student
+	public StudentEntity incrementProgressTracker(String username, int trackerId, int incrementAmount) {
+	    // Retrieve the list of students by username and isDeleted status
+	    List<StudentEntity> students = srepo.findByUsernameAndIsDeleted(username, false);
+
+	    // Check if the list is empty
+	    if (students.isEmpty()) {
+	        throw new EntityNotFoundException("No active student found with username: " + username);
+	    }
+
+	    // Assuming you want to increment the progress of the first student in the list
+	    StudentEntity student = students.get(0);
+
+	    // Retrieve the progress tracker by ID
+	    ProgressTrackerEntity progTrack = progtRepo.findById(trackerId);
+
+	    // Check if the progress tracker exists
+	    if (progTrack == null) {
+	        throw new EntityNotFoundException("Progress Tracker not found with id: " + trackerId);
+	    }
+
+	    // Check if the progress tracker is already completed
+	    if (progTrack.isCompleted()) {
+	        throw new RuntimeException("Progress Tracker is already completed and cannot be incremented further.");
+	    }
+
+	    // Increment the progress of the chosen progress tracker
+	    progTrack.setProgPerc(progTrack.getProgPerc() + incrementAmount);
+
+	    // Check if the progress reached 100 and mark it as completed
+	    if (progTrack.getProgPerc() >= 100) {
+	        progTrack.setCompleted(true);
+	    }
+
+	    // Save the updated progress tracker
+	    ProgressTrackerEntity updatedProgTrack = progtRepo.save(progTrack);
+
+	    // Remove the progress tracker from its current position in the list
+	    student.removeProgressTracker(progTrack);
+
+	    // Add the updated progress tracker to the end of the list
+	    student.addProgressTracker(updatedProgTrack);
+
+	    // Save the updated student
+	    return srepo.save(student);
+	}
 	
 	/////////////////////// POINTS
 	//STAR POINTS (isDeleted is considered)

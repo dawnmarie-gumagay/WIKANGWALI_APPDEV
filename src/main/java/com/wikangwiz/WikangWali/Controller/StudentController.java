@@ -24,7 +24,10 @@ import com.wikangwiz.WikangWali.Entity.AchievementEntity;
 import com.wikangwiz.WikangWali.Entity.ProgressTrackerEntity;
 import com.wikangwiz.WikangWali.Entity.StudentEntity;
 import com.wikangwiz.WikangWali.Methods.AuthRequest;
+import com.wikangwiz.WikangWali.Methods.ForgotPasswordRequest;
 import com.wikangwiz.WikangWali.Methods.LoginResponse;
+import com.wikangwiz.WikangWali.Methods.ResetCodeResponse;
+import com.wikangwiz.WikangWali.Methods.ResetPasswordRequest;
 import com.wikangwiz.WikangWali.Methods.UpdatePasswordRequest;
 import com.wikangwiz.WikangWali.Repository.AchievementRepository;
 import com.wikangwiz.WikangWali.Repository.ProgressTrackerRepository;
@@ -147,6 +150,30 @@ public class StudentController {
 	    }
 	}
 	
+	///////////FORGET PASSWORD////////////
+	//GENERATE CODE
+	@PostMapping("/generateResetCode")
+    public ResponseEntity<ResetCodeResponse> generateResetCode(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        try {
+            return sserv.generateResetCode(forgotPasswordRequest.getUsername());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResetCodeResponse(e.getMessage()));
+        }
+    }
+	
+	//RESET PASS UPDATE
+	@PostMapping("/resetPassword")
+    public ResponseEntity<ResetCodeResponse> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        try {
+            return sserv.resetPassword(
+                    resetPasswordRequest.getUsername(),
+                    resetPasswordRequest.getResetCode(),
+                    resetPasswordRequest.getNewPassword(),
+                    resetPasswordRequest.getConfirmPassword());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResetCodeResponse(e.getMessage()));
+        }
+    }
 	
 	////////////ACHIEVEMENTS//////////
 	//ADD EXISTING ACHIEVEMENTS TO USER
@@ -176,6 +203,23 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }
+	
+	//ADD PROGRESS PERCENT
+	// Increment the progress of a specific progress tracker for a student
+	@PutMapping("/{username}/progressTrackers/{trackerId}/increment/{incrementAmount}")
+	public ResponseEntity<?> incrementProgressTracker(
+	        @PathVariable String username,
+	        @PathVariable int trackerId,
+	        @PathVariable int incrementAmount) {
+	    try {
+	        StudentEntity updatedStudent = sserv.incrementProgressTracker(username, trackerId, incrementAmount);
+	        return ResponseEntity.ok(updatedStudent);
+	    } catch (EntityNotFoundException e) {
+	        return ResponseEntity.notFound().build();
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
 	
 	
 	////////////PROGRESS TRACKERS//////////

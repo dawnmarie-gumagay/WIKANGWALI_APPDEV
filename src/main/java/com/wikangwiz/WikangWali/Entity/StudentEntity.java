@@ -203,6 +203,13 @@ public class StudentEntity{
 	public void setResetCode(int resetCode) {
 		this.resetCode = resetCode;
 	}
+
+	public void removeProgressTracker(ProgressTrackerEntity progTrack) {
+		// TODO Auto-generated method stub
+		if (progTrackers != null) {
+			progTrackers.remove(progTrack);
+        }
+	}
 	
 	
 
