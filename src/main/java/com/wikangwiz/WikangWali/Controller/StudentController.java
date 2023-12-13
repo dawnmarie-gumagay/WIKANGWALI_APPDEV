@@ -166,7 +166,7 @@ public class StudentController {
     public ResponseEntity<ResetCodeResponse> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         try {
             return sserv.resetPassword(
-                    resetPasswordRequest.getUsername(),
+            		resetPasswordRequest.getUsername(),
                     resetPasswordRequest.getResetCode(),
                     resetPasswordRequest.getNewPassword(),
                     resetPasswordRequest.getConfirmPassword());

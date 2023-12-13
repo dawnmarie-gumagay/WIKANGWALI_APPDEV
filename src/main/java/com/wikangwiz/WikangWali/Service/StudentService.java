@@ -34,6 +34,7 @@ public class StudentService {
 	@Autowired
     private AchievementRepository achieveRepo;
 	
+	
 	//USED TO REGISTER AND ADD USER (USED IN REACT) (isDeleted is considered)
 	public StudentEntity insertStudent(StudentEntity student) {
 	    // Check if the username already exists in tbluser
@@ -220,8 +221,6 @@ public class StudentService {
 	    return null;
 	}
 
-	
-	//////END OF MODIFIED CRUD//////
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//////METHODS//////
 	//LOG IN (isDeleted is considered)
@@ -323,8 +322,6 @@ public class StudentService {
 			 throw new RuntimeException("Error updating student: " + ex.getMessage(), ex);
 		 }
 	}
-	 
-	 
 	 
 	 /////////////FORGET PASSWORD////////////
 	 //GENERATE CODE 2

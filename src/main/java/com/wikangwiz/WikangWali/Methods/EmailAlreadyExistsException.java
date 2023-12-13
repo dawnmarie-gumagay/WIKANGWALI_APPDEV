@@ -2,6 +2,8 @@ package com.wikangwiz.WikangWali.Methods;
 
 public class EmailAlreadyExistsException extends RuntimeException {
 
+	
+
 	/**
 	 * 
 	 */
